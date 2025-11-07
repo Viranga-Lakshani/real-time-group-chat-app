@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  server:
+    build: ./server
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - UPLOAD_DIR=/usr/src/app/uploads
+    volumes:
+      - ./server:/usr/src/app
+      - server_uploads:/usr/src/app/uploads
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=chatdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  mobile:
+    build: ./mobile
+    environment:
+      - EXPO_DEVTOOLS_LISTEN=0.0.0.0:19002
+      - REACT_NATIVE_PACKAGER_HOSTNAME=host.docker.internal
+      - NEXT_PUBLIC_API_URL=http://host.docker.internal:4000
+    ports:
+      - "19002:19002" # Expo devtools
+      - "19000:19000"
+      - "19001:19001"
+    volumes:
+      - ./mobile:/app
+    depends_on:
+      - server
+
+volumes:
+  server_uploads:
+  db_data:

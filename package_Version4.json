@@ -1,0 +1,8 @@
+{
+  "name": "realtime-chat-root",
+  "private": true,
+  "workspaces": [
+    "server",
+    "mobile"
+  ]
+}
